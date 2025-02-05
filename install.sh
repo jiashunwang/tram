@@ -2,8 +2,8 @@
 # conda create -n tram python=3.10 -y
 # conda activate tram
 
-conda install nvidia/label/cuda-11.8.0::cuda-toolkit -y # you can disable this if you already have cuda-11.8
-conda install pytorch==2.0.0 torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y
+conda install -c nvidia/label/cuda-11.8.0 cuda-toolkit # you can disable this if you already have cuda-11.8
+pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 pip install 'git+https://github.com/facebookresearch/detectron2.git@a59f05630a8f205756064244bf5beb8661f96180'
 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
 

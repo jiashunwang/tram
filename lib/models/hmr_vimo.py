@@ -127,7 +127,7 @@ class HMR_VIMO(nn.Module):
 
         trans_full = self.get_trans(out['pred_cam'], center, scale, img_focal, img_center)
         out['trans_full'] = trans_full
-        
+        out['j2d'] = j2d
         return out, iter_preds
     
 
@@ -153,17 +153,19 @@ class HMR_VIMO(nn.Module):
         pred_shape = []
         pred_rotmat = []
         pred_trans = []
+        pred_j2d = []
         frame = []
 
         for frame_ck, boxes_ck in zip(frame_chunks, boxes_chunks):
             img_ck = imgfiles[frame_ck]
             results = self.inference_chunk(img_ck, boxes_ck, img_focal=img_focal, img_center=img_center)
-
+            
             pred_cam.append(results['pred_cam'])
             pred_pose.append(results['pred_pose'])
             pred_shape.append(results['pred_shape'])
             pred_rotmat.append(results['pred_rotmat'])
             pred_trans.append(results['pred_trans'])
+            pred_j2d.append(results['pred_j2d'])
             frame.append(torch.from_numpy(frame_ck))
 
         results = {'pred_cam': torch.cat(pred_cam),
@@ -171,6 +173,7 @@ class HMR_VIMO(nn.Module):
                 'pred_shape': torch.cat(pred_shape),
                 'pred_rotmat': torch.cat(pred_rotmat),
                 'pred_trans': torch.cat(pred_trans),
+                'pred_j2d': torch.cat(pred_j2d),
                 'frame': torch.cat(frame)}
         
         return results
@@ -186,7 +189,7 @@ class HMR_VIMO(nn.Module):
         pred_shape = []
         pred_rotmat = []
         pred_trans = []
-
+        pred_j2d = []
         # To-do: efficient implementation with batch
         items = []
         for i in tqdm(range(len(db))):
@@ -219,6 +222,7 @@ class HMR_VIMO(nn.Module):
             pred_shape.append(out['pred_shape'].cpu())
             pred_rotmat.append(out['pred_rotmat'].cpu())
             pred_trans.append(out['trans_full'].cpu())
+            pred_j2d.append(out['j2d'].cpu())
 
 
         results = {'pred_cam': torch.cat(pred_cam),
@@ -226,6 +230,7 @@ class HMR_VIMO(nn.Module):
                 'pred_shape': torch.cat(pred_shape),
                 'pred_rotmat': torch.cat(pred_rotmat),
                 'pred_trans': torch.cat(pred_trans),
+                'pred_j2d': torch.cat(pred_j2d),
                 'img_focal': img_focal,
                 'img_center': img_center}
         
